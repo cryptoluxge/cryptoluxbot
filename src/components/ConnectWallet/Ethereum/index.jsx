@@ -1,22 +1,18 @@
-import { useWallet } from '@aptos-labs/wallet-adapter-react'
 import { useWeb3React } from '@web3-react/core'
+import SettingsButton from 'components/SettingsButton'
 import { useToast } from 'hooks/useToast'
 import { useEffect, useRef } from 'react'
 import ConnectButton from './ConnectButton'
-import { injected } from './connectors'
 import DisconnectButton from './DisconnectButton'
 import WrongNetwork from './WrongNetwork'
-import { supportedEvmChainsIDs } from 'config'
-import SettingsButton from 'components/SettingsButton'
+import { injected } from './connectors'
 
 export default function Modal() {
   const mountedRef = useRef(true)
   const { active, activate, chainId } = useWeb3React()
-  const { connect, connected } = useWallet()
   const toast = useToast()
   const provider = window.ethereum
   const isConnected = localStorage.getItem('isEVMWalletConnected')
-  const isEVMConnected = localStorage.getItem('isMoveWalletConnected')
 
   const connectEvmWalletOnPageLoad = async () => {
     if (localStorage?.getItem('isEVMWalletConnected') === 'true') {
@@ -33,30 +29,24 @@ export default function Modal() {
     }
   }
 
-  const connectAptosWalletOnPageLoad = () => {
-    if (connected === false && isEVMConnected === 'true') {
-      try {
-        const connectedWallet = localStorage.getItem('AptosWalletName')
-        connect(connectedWallet)
-      } catch (ex) {
-        toast('error', '', ex)
-      }
-    }
-  }
-
   useEffect(() => {
     connectEvmWalletOnPageLoad()
-    connectAptosWalletOnPageLoad()
 
     return () => {
       mountedRef.current = false
     }
     // eslint-disable-next-line
-  }, [active, connected])
+  }, [active])
 
   return (
     <div className='p-3 flex items-center gap-2'>
-      {active && (isConnected === 'true' || connected) ? <div>{supportedEvmChainsIDs.includes(chainId) || connected ? <DisconnectButton /> : <WrongNetwork changeTo='BSC' text='არასწორი ქსელი' />}</div> : <ConnectButton />}
+      {active && isConnected === 'true' ? (
+        <div>
+          <DisconnectButton /> : <WrongNetwork changeTo='BSC' text='არასწორი ქსელი' />
+        </div>
+      ) : (
+        <ConnectButton />
+      )}
       <SettingsButton />
     </div>
   )

@@ -1,4 +1,3 @@
-import { useWallet } from '@aptos-labs/wallet-adapter-react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import { useWeb3React } from '@web3-react/core'
@@ -19,7 +18,6 @@ import Borderline from 'components/Borderline'
 
 export default function DisconnectButton() {
   const { account: web3Account, deactivate, chainId, active } = useWeb3React()
-  const { account: aptosAccount, disconnect, connected, wallet } = useWallet()
   const toast = useToast()
   const evmWallet = localStorage.getItem('connectedEVMWallet')
   const isEVMWallet = localStorage.getItem('isEVMWalletConnected')
@@ -28,15 +26,6 @@ export default function DisconnectButton() {
     try {
       deactivate()
       localStorage.setItem('isEVMWalletConnected', false)
-    } catch (ex) {
-      toast('error', 'დაფიქსირდა შეცდომა!', ex)
-    }
-  }
-
-  const moveWalletDisconnect = async () => {
-    try {
-      disconnect()
-      localStorage.setItem('isMoveWalletConnected', false)
     } catch (ex) {
       toast('error', 'დაფიქსირდა შეცდომა!', ex)
     }
@@ -92,56 +81,6 @@ export default function DisconnectButton() {
                     <IoIosLogOut className='text-lightText dark:text-darkText flex-nowrap text-lg' />
                     <Typography className='text-sm whitespace-nowrap'>გამოსვლა</Typography>
                   </div>
-                </div>
-              )}
-              {connected === true && (
-                <div>
-                  <Borderline />
-                  <div className='p-2'>
-                    <Typography className='text-sm mb-1' color='text-gray-500'>
-                      APTOS ქსელი
-                    </Typography>
-                    <div className='flex items-center'>
-                      <Typography>Mainnet</Typography>
-                      <div id='pingingThing' className='flex items-center justify-center ml-2'>
-                        <div id='top1' className='animate-ping bg-green-400 w-2 h-2 rounded-full opacity-50 absolute z-[1]'></div>
-                        <div id='top2' className='bg-green-500 w-2 h-2 rounded-full relative z-0'></div>
-                      </div>
-                    </div>
-                  </div>
-                  <Borderline />
-                  <div>
-                    <div>
-                      <div className='px-3 py-3 flex items-center gap-2 cursor-pointer'>
-                        <Avatar src={wallet.icon} className='w-5' />
-                        <Typography className='text-sm whitespace-nowrap'>{shortAddress(aptosAccount.address, 5)}</Typography>
-                      </div>
-                    </div>
-                    <Borderline />
-                    <div onClick={() => navigator.clipboard.writeText(aptosAccount.address)} className='p-3 flex items-center gap-2 cursor-pointer duration-150 hover:bg-lightHover dark:hover:bg-darkHover'>
-                      <FiCopy className='text-lightText dark:text-darkText flex-nowrap' />
-                      <Typography className='text-sm whitespace-nowrap'>მისამართის კოპირება</Typography>
-                    </div>
-                    <Borderline />
-                    <div className='p-3 flex items-center gap-2 cursor-pointer duration-150 hover:bg-lightHover dark:hover:bg-darkHover'>
-                      <ViewOnExplorer chainType='APT' chainId={0} dataType='wallet' data={aptosAccount.address} />
-                    </div>
-                    <Borderline />
-                    <div onClick={() => moveWalletDisconnect()} className='p-3 flex items-center gap-2 cursor-pointer duration-150 hover:bg-lightHover dark:hover:bg-darkHover rounded-b-lg'>
-                      <IoIosLogOut className='text-lightText dark:text-darkText flex-nowrap text-lg' />
-                      <Typography className='text-sm whitespace-nowrap'>გამოსვლა</Typography>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {isEVMWallet && !connected && (
-                <div className='p-1'>
-                  <ConnectWallet text='დაამატე APTOS საფულე' />
-                </div>
-              )}
-              {connected && !active && (
-                <div className='p-1'>
-                  <ConnectWallet text='დაამატე EVM საფულე' />
                 </div>
               )}
             </div>
